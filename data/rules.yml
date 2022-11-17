@@ -188,3 +188,11 @@ rules:
   - action: survey_form
   - active_loop: null
   - action: action_survey_submit
+
+- rule: Submit review
+  condition:
+  - active_loop: review_form
+  steps:
+  - action: review_form
+  - active_loop: null
+  - action: action_submit_review

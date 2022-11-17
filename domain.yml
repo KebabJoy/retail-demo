@@ -17,6 +17,7 @@ intents:
 - out_of_scope
 - nlu_fallback
 - whats_your_name
+- request_review
 entities:
 - email
 - color
@@ -96,6 +97,11 @@ slots:
     influence_conversation: true
     mappings:
     - type: custom
+  review_text:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
 responses:
   utter_greet:
   - buttons:
@@ -195,6 +201,8 @@ responses:
   - text: Sorry, seems like we don't have those shoes.
   utter_order_shoes:
   - text: Sorry, I can't actually help you order the shoes. Please visit our site to buy some nice shoes! I can help you check inventory, see the status of an order or even make a change to that order.
+  utter_review_submitted:
+  - text: Thank you for the review!
 actions:
 - action_product_search
 - action_survey_submit
@@ -202,6 +210,7 @@ actions:
 - action_cancel_order
 - action_return
 - action_give_name
+- action_submit_review
 forms:
   order_status_form:
     ignored_intents: []
@@ -229,3 +238,8 @@ forms:
     required_slots:
     - rating
     - open_feedback
+  review_form:
+    ignored_intents: []
+    required_slots:
+      - review_text
+      - email

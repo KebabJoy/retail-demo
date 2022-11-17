@@ -194,6 +194,15 @@ nlu:
     - see you around
     - bye bye
     - see you later
+- intent: request_review
+  examples: |
+    - I wanna submit a review
+    - I wanna complain about a product's quality
+    - I don't like the service
+    - I like the service
+    - Terrible
+    - Nice
+    - How can I leave a review?
 - intent: out_of_scope
   examples: |
     - mmm I can't see what you're saying

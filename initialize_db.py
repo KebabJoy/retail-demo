@@ -1,5 +1,6 @@
 import sqlite3
-conn = sqlite3.connect('example.db')
+
+conn = sqlite3.connect('actions/example.db')
 
 c = conn.cursor()
 
@@ -12,15 +13,16 @@ c = conn.cursor()
 # c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
 
 # EXISTING ORDERS
-# Create table
-c.execute('''CREATE TABLE orders
-             (order_date, order_number, order_email, color, size, status)''')
+# # Create table
+# c.execute('''CREATE TABLE orders
+#              (order_date, order_number, order_email, color, size, status)''')
+c.execute('''CREATE TABLE reviews (text, email)''')
 
-# data to be added
-purchases = [('2006-01-05',123456,'example@rasa.com','blue', 9, 'shipped'),
-             ('2021-01-05',123457,'me@rasa.com','black', 10, 'order pending'),
-             ('2021-01-05',123458,'me@gmail.com','gray', 11, 'delivered'),
-            ]
+# # data to be added
+# purchases = [('2006-01-05', 123456, 'example@rasa.com', 'blue', 9, 'shipped'),
+#              ('2021-01-05', 123457, 'me@rasa.com', 'black', 10, 'order pending'),
+#              ('2021-01-05', 123458, 'me@gmail.com', 'gray', 11, 'delivered'),
+#              ]
 
 # add data
 c.executemany('INSERT INTO orders VALUES (?,?,?,?,?,?)', purchases)
@@ -41,11 +43,10 @@ inventory = [(7, 'blue'),
              (8, 'black'),
              (9, 'black'),
              (10, 'black')
-            ]
+             ]
 
 # add data
 c.executemany('INSERT INTO inventory VALUES (?,?)', inventory)
-
 
 # Save (commit) the changes
 conn.commit()
