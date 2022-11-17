@@ -206,3 +206,21 @@ rules:
   - action: review_form
   - active_loop: null
   - action: action_submit_review
+
+# Reserve shoes at inventory
+
+- rule:
+  steps:
+  - intent: reserve_item
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: inventory_form
+  - active_loop: inventory_form
+
+- rule: Submit your review data
+  condition:
+    - active_loop: inventory_form
+  steps:
+    - action: inventory_form
+    - active_loop: null
+    - action: action_reserve_inventory

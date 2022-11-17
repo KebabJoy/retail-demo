@@ -203,6 +203,15 @@ nlu:
     - Terrible
     - Nice
     - How can I leave a review?
+- intent: reserve_item
+  examples: |
+    - I wanna sell an item
+    - I wanna sell shoes
+    - Add an item to inventory
+    - Sell something
+    - Start selling
+    - Reserve an item at inventory
+    - Reserve shoes
 - intent: out_of_scope
   examples: |
     - mmm I can't see what you're saying

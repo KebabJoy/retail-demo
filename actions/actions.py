@@ -214,9 +214,42 @@ class SubmitReview(Action):
 
         connection = sqlite3.connect(path_to_db)
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO reviews (email, review_text) VALUES(?,?)", [email, text])
+        cursor.execute("INSERT INTO reviews (email, text) VALUES(?,?)", [email, text])
         connection.commit()
         connection.close()
-        dispatcher.utter_message(response="utter_review_submitted")
-        return []
 
+        dispatcher.utter_message(response="utter_review_submitted")
+        slots_to_reset = ["review_text"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class ReserveInventory(Action):
+    def name(self) -> Text:
+        return "action_reserve_inventory"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        color = tracker.get_slot("color")
+        size = tracker.get_slot("size")
+        email = tracker.get_slot("email")
+
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = cursor.fetchone()
+
+        if list(data_row)[5] == 'seller':
+            cursor.execute("INSERT INTO inventory (size, color) VALUES(?,?)", [size, color])
+            connection.commit()
+            connection.close()
+            dispatcher.utter_message(response="utter_item_reserved")
+        else:
+            dispatcher.utter_message(response="utter_forbidden")
+
+        slots_to_reset = ["size", "color"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
