@@ -23,6 +23,7 @@ entities:
 - color
 - number
 - negation
+- review_text
 slots:
   color:
     type: text
@@ -45,6 +46,7 @@ slots:
         requested_slot: email
       - active_loop: cancel_form
       - active_loop: product_updates_form
+      - active_loop: review_form
     - intent:
       - inform
       type: from_text
@@ -101,7 +103,10 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-    - type: from_entity
+    - type: from_text
+      conditions:
+      - active_loop: review_form
+        requested_slot: review_text
 responses:
   utter_greet:
   - buttons:
@@ -203,6 +208,10 @@ responses:
   - text: Sorry, I can't actually help you order the shoes. Please visit our site to buy some nice shoes! I can help you check inventory, see the status of an order or even make a change to that order.
   utter_review_submitted:
   - text: Thank you for the review!
+  utter_ask_review_form_email:
+  - text: What's your email address?
+  utter_ask_review_form_review_text:
+  - text: Tell us about your experience.
 actions:
 - action_product_search
 - action_survey_submit
