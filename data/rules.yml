@@ -242,3 +242,11 @@ rules:
     - action: seller_form
     - active_loop: null
     - action: action_create_seller_request
+
+# logout
+
+- rule: Submit log out
+  steps:
+    - intent: logout
+    - active_loop: null
+    - action: action_logout

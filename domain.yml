@@ -20,6 +20,7 @@ intents:
 - request_review
 - reserve_item
 - become_seller
+- logout
 entities:
 - email
 - color
@@ -243,6 +244,8 @@ responses:
   - text: Admins not allowed to do this!
   utter_already_seller:
   - text: You are already a seller!
+  utter_logged_out:
+  - text: You successfully logged out!
 actions:
 - action_product_search
 - action_survey_submit
@@ -253,6 +256,7 @@ actions:
 - action_submit_review
 - action_reserve_inventory
 - action_create_seller_request
+- action_logout
 forms:
   order_status_form:
     ignored_intents: []

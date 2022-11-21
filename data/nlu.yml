@@ -220,6 +220,15 @@ nlu:
     - Start selling
     - Reserve an item at inventory
     - Reserve shoes
+- intent: logout
+  examples: |
+    - I wanna logout
+    - Logout
+    - exit
+    - Logout from account
+    - I want to login another account
+    - Choose another account
+    - Log in another account
 - intent: out_of_scope
   examples: |
     - mmm I can't see what you're saying

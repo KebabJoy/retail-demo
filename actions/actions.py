@@ -283,4 +283,17 @@ class CreateSellerRequest(Action):
             dispatcher.utter_message(response="utter_seller_request_submitted")
 
 
-        return []
+class Logout(Action):
+    def name(self) -> Text:
+        return "action_logout"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(response="utter_logged_out")
+
+        slots_to_reset = ["email"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
