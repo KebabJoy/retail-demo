@@ -21,13 +21,23 @@ intents:
 - reserve_item
 - become_seller
 - logout
+- list_applications
 entities:
 - email
 - color
 - number
 - negation
 - review_text
+- user_id
 slots:
+  user_id:
+    type: text
+    influence_conversation: false
+    mappings:
+    - entity: number
+      type: from_entity
+      conditions:
+      - active_loop: applications_form
   color:
     type: text
     influence_conversation: false
@@ -56,10 +66,13 @@ slots:
       - active_loop: review_form
       - active_loop: inventory_form
       - active_loop: seller_form
+      - active_loop: applications_form
+      - active_loop: list_applications_form
     - intent:
       - inform
       - become_seller
       - reserve_item
+      - list_applications
       type: from_text
       conditions:
       - active_loop: order_status_form
@@ -236,6 +249,18 @@ responses:
   - text: Tell us your email.
   utter_ask_inventory_form_email:
   - text: Tell us your email.
+  utter_ask_list_applications_form_email:
+  - text: Tell us your email.
+  utter_ask_applications_form_email:
+  - text: Tell us your email.
+  utter_ask_applications_form_user_id:
+  - text: Which user you want to approve?
+  utter_only_admin:
+  - text: Only admin can do this!
+  utter_users_to_review:
+  - text: "Here is the list of users to review:"
+  utter_client_approved:
+  - text: Client is now a seller!
   utter_item_reserved:
   - text: Item successfully reserved at the inventory!
   utter_forbidden:
@@ -257,6 +282,8 @@ actions:
 - action_reserve_inventory
 - action_create_seller_request
 - action_logout
+- action_approve_client
+- action_list_applications
 forms:
   order_status_form:
     ignored_intents: []
@@ -301,3 +328,12 @@ forms:
     ignored_intents: []
     required_slots:
       - email
+  applications_form:
+    ignored_intents: []
+    required_slots:
+      - email
+      - user_id
+  list_applications_form:
+      ignored_intents: []
+      required_slots:
+        - email

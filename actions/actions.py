@@ -297,3 +297,68 @@ class Logout(Action):
 
         slots_to_reset = ["email"]
         return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class ApplicationsList(Action):
+    def name(self) -> Text:
+        return "action_list_applications"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+        print(data_row)
+        print(data_row[5])
+        print(data_row[5] == 'admin')
+        if data_row[5] != 'admin':
+            dispatcher.utter_message(response="utter_only_admin")
+            return []
+
+        cursor.execute("SELECT * FROM seller_requests WHERE reviewed IS FALSE")
+        records = cursor.fetchall()
+        res = []
+        for row in records:
+            res.append(row[2])
+
+        dispatcher.utter_message(response="utter_users_to_review")
+        # print(" ".join(res))
+        dispatcher.utter_message(text=str(res))
+
+        return []
+
+
+class ApproveClient(Action):
+    def name(self) -> Text:
+        return "action_approve_client"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+
+        if data_row[5] != 'admin':
+            dispatcher.utter_message(response="utter_only_admin")
+            return []
+
+        user_id = tracker.get_slot("user_id")
+        cursor.execute("UPDATE seller_requests SET reviewed=TRUE WHERE user_id=?", (user_id,))
+        connection.commit()
+        connection.close()
+        dispatcher.utter_message(response="utter_client_approved")
+
+        slots_to_reset = ["user_id"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]

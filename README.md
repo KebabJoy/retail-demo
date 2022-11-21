@@ -112,3 +112,9 @@ GmbH. [Copy of the license](https://github.com/RasaHQ/retail-demo/blob/main/LICE
 Licensees may convey the work under this license. There is no warranty for the work.
 
 
+## Убрал баг с оценкой бота
+## Добавил роли
+## Можно добавлять товары за продавца
+## За клиента можно делать запрос стать продавцом
+## За админа можно аппрувнуть запрос
+## Добавил возможность разлогиниться

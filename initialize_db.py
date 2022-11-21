@@ -7,6 +7,7 @@ c = conn.cursor()
 # c.execute('''CREATE TABLE roles (id INTEGER, name VARCHAR(255), PRIMARY KEY(id ASC))''')
 # c.execute('''INSERT INTO roles (name) VALUES('client')''')
 # c.execute('''INSERT INTO roles (name) VALUES('seller')''')
+# c.execute('''INSERT INTO roles (name) VALUES('admin')''')
 # c.execute('''CREATE TABLE users (id INTEGER, name VARCHAR(255), email TEXT, role_id INTEGER, FOREIGN KEY (role_id) REFERENCES roles(id), PRIMARY KEY(id ASC))''')
 
 # Create table

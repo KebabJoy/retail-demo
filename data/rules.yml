@@ -250,3 +250,33 @@ rules:
     - intent: logout
     - active_loop: null
     - action: action_logout
+
+# list applications
+
+- rule: List client's application
+  steps:
+    - intent: list_applications
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: list_applications_form
+    - active_loop: list_applications_form
+
+- rule: Activate next form
+  condition:
+    - active_loop: list_applications_form
+  steps:
+    - action: list_applications_form
+    - active_loop: null
+    - action: action_list_applications
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: applications_form
+    - active_loop: applications_form
+
+- rule: Submit form
+  condition:
+    - active_loop: applications_form
+  steps:
+    - action: applications_form
+    - active_loop: null
+    - action: action_approve_client

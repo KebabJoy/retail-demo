@@ -229,6 +229,12 @@ nlu:
     - I want to login another account
     - Choose another account
     - Log in another account
+- intent: list_applications
+  examples: |
+    - list client's applications
+    - show applications
+    - list clients 
+    - approve applications
 - intent: out_of_scope
   examples: |
     - mmm I can't see what you're saying
