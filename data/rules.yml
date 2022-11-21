@@ -209,7 +209,7 @@ rules:
 
 # Reserve shoes at inventory
 
-- rule:
+- rule: Activate form to sell shoes
   steps:
   - intent: reserve_item
   - action: action_deactivate_loop
@@ -224,3 +224,21 @@ rules:
     - action: inventory_form
     - active_loop: null
     - action: action_reserve_inventory
+
+# Become a seller
+
+- rule: Activate form for seller request
+  steps:
+  - intent: become_seller
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: seller_form
+  - active_loop: seller_form
+
+- rule: Submit your review data
+  condition:
+    - active_loop: seller_form
+  steps:
+    - action: seller_form
+    - active_loop: null
+    - action: action_create_seller_request

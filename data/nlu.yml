@@ -34,6 +34,7 @@ nlu:
   examples: |
     - do you have any [black](color) shoes in stock?
     - what about [white](color) shoes
+    - what about [red](color) shoes
     - what's your inventory
     - are you out of size 9 shoes
     - check inventory
@@ -203,6 +204,13 @@ nlu:
     - Terrible
     - Nice
     - How can I leave a review?
+- intent: become_seller
+  examples: |
+    - I wanna sell shoes
+    - I want to sell items
+    - I want to become a seller
+    - I wanna become a seller
+    - How to become a seller?
 - intent: reserve_item
   examples: |
     - I wanna sell an item

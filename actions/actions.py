@@ -253,3 +253,34 @@ class ReserveInventory(Action):
 
         slots_to_reset = ["size", "color"]
         return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class CreateSellerRequest(Action):
+    def name(self) -> Text:
+        return "action_create_seller_request"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+
+        if data_row[5] == 'seller':
+            dispatcher.utter_message(response="utter_already_seller")
+        elif data_row[5] == 'admin':
+            dispatcher.utter_message(response="utter_admins_not_allowed")
+        else:
+            cursor.execute("INSERT INTO seller_requests (user_id) VALUES(?)", [list(data_row)[0]])
+            connection.commit()
+            connection.close()
+            dispatcher.utter_message(response="utter_seller_request_submitted")
+
+
+        return []

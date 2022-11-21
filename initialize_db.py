@@ -3,7 +3,8 @@ import sqlite3
 conn = sqlite3.connect('actions/example.db')
 
 c = conn.cursor()
-# c.execute('''CREATE TABLE roles (id INTEGER, name VARCHAR(255), PRIMARY KEY(id, ASC))''')
+# c.execute('''CREATE TABLE seller_requests (id INTEGER, reviewed BOOLEAN, user_id INTEGER, PRIMARY KEY(id ASC), FOREIGN KEY (user_id) REFERENCES users(id))''')
+# c.execute('''CREATE TABLE roles (id INTEGER, name VARCHAR(255), PRIMARY KEY(id ASC))''')
 # c.execute('''INSERT INTO roles (name) VALUES('client')''')
 # c.execute('''INSERT INTO roles (name) VALUES('seller')''')
 # c.execute('''CREATE TABLE users (id INTEGER, name VARCHAR(255), email TEXT, role_id INTEGER, FOREIGN KEY (role_id) REFERENCES roles(id), PRIMARY KEY(id ASC))''')
