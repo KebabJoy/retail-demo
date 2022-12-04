@@ -110,3 +110,11 @@ It is recommended to use an [automated CI/CD process](https://rasa.com/docs/rasa
 Licensed under the GNU General Public License v3. Copyright 2021 Rasa Technologies
 GmbH. [Copy of the license](https://github.com/RasaHQ/retail-demo/blob/main/LICENSE).
 Licensees may convey the work under this license. There is no warranty for the work.
+
+
+## Убрал баг с оценкой бота
+## Добавил роли
+## Можно добавлять товары за продавца
+## За клиента можно делать запрос стать продавцом
+## За админа можно аппрувнуть запрос
+## Добавил возможность разлогиниться

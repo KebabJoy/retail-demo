@@ -188,3 +188,95 @@ rules:
   - action: survey_form
   - active_loop: null
   - action: action_survey_submit
+
+# submit review
+
+- rule: Activate form for review
+  steps:
+  - intent: request_review
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: review_form
+  - active_loop: review_form
+
+- rule: Submit your review data
+  condition:
+  - active_loop: review_form
+  steps:
+  - action: review_form
+  - active_loop: null
+  - action: action_submit_review
+
+# Reserve shoes at inventory
+
+- rule: Activate form to sell shoes
+  steps:
+  - intent: reserve_item
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: inventory_form
+  - active_loop: inventory_form
+
+- rule: Submit your review data
+  condition:
+    - active_loop: inventory_form
+  steps:
+    - action: inventory_form
+    - active_loop: null
+    - action: action_reserve_inventory
+
+# Become a seller
+
+- rule: Activate form for seller request
+  steps:
+  - intent: become_seller
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: seller_form
+  - active_loop: seller_form
+
+- rule: Submit your review data
+  condition:
+    - active_loop: seller_form
+  steps:
+    - action: seller_form
+    - active_loop: null
+    - action: action_create_seller_request
+
+# logout
+
+- rule: Submit log out
+  steps:
+    - intent: logout
+    - active_loop: null
+    - action: action_logout
+
+# list applications
+
+- rule: List client's application
+  steps:
+    - intent: list_applications
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: list_applications_form
+    - active_loop: list_applications_form
+
+- rule: Activate next form
+  condition:
+    - active_loop: list_applications_form
+  steps:
+    - action: list_applications_form
+    - active_loop: null
+    - action: action_list_applications
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: applications_form
+    - active_loop: applications_form
+
+- rule: Submit form
+  condition:
+    - active_loop: applications_form
+  steps:
+    - action: applications_form
+    - active_loop: null
+    - action: action_approve_client

@@ -9,15 +9,16 @@ import sqlite3
 # change this to the location of your SQLite file
 path_to_db = "actions/example.db"
 
+
 class ActionProductSearch(Action):
     def name(self) -> Text:
         return "action_product_search"
 
     def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
 
         # connect to DB
@@ -29,36 +30,37 @@ class ActionProductSearch(Action):
 
         # place cursor on correct row based on search criteria
         cursor.execute("SELECT * FROM inventory WHERE color=? AND size=?", shoe)
-        
+
         # retrieve sqlite row
         data_row = cursor.fetchone()
 
         if data_row:
             # provide in stock message
-            dispatcher.utter_message(template="utter_in_stock")
+            dispatcher.utter_message(response="utter_in_stock")
             connection.close()
+
             slots_to_reset = ["size", "color"]
             return [SlotSet(slot, None) for slot in slots_to_reset]
         else:
             # provide out of stock
-            dispatcher.utter_message(template="utter_no_stock")
+            dispatcher.utter_message(response="utter_no_stock")
             connection.close()
             slots_to_reset = ["size", "color"]
             return [SlotSet(slot, None) for slot in slots_to_reset]
+
 
 class SurveySubmit(Action):
     def name(self) -> Text:
         return "action_survey_submit"
 
     async def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-
-        dispatcher.utter_message(template="utter_open_feedback")
-        dispatcher.utter_message(template="utter_survey_end")
+        dispatcher.utter_message(response="utter_open_feedback")
+        dispatcher.utter_message(response="utter_survey_end")
         return [SlotSet("survey_complete", True)]
 
 
@@ -67,10 +69,10 @@ class OrderStatus(Action):
         return "action_order_status"
 
     def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
 
         # connect to DB
@@ -89,12 +91,12 @@ class OrderStatus(Action):
             data_list = list(data_row)
 
             # respond with order status
-            dispatcher.utter_message(template="utter_order_status", status=data_list[5])
+            dispatcher.utter_message(response="utter_order_status", status=data_list[5])
             connection.close()
             return []
         else:
             # db didn't have an entry with this email
-            dispatcher.utter_message(template="utter_no_order")
+            dispatcher.utter_message(response="utter_no_order")
             connection.close()
             return []
 
@@ -104,10 +106,10 @@ class CancelOrder(Action):
         return "action_cancel_order"
 
     def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
 
         # connect to DB
@@ -129,11 +131,11 @@ class CancelOrder(Action):
             connection.close()
 
             # confirm cancellation
-            dispatcher.utter_message(template="utter_order_cancel_finish")
+            dispatcher.utter_message(response="utter_order_cancel_finish")
             return []
         else:
             # db didn't have an entry with this email
-            dispatcher.utter_message(template="utter_no_order")
+            dispatcher.utter_message(response="utter_no_order")
             connection.close()
             return []
 
@@ -143,10 +145,10 @@ class ReturnOrder(Action):
         return "action_return"
 
     def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
 
         # connect to DB
@@ -162,36 +164,201 @@ class ReturnOrder(Action):
 
         if data_row:
             # change status of entry
-            status = [("returning"), (tracker.get_slot("email"))]
+            status = ["returning", (tracker.get_slot("email"))]
             cursor.execute("UPDATE orders SET status=? WHERE order_email=?", status)
             connection.commit()
             connection.close()
 
             # confirm return
-            dispatcher.utter_message(template="utter_return_finish")
+            dispatcher.utter_message(response="utter_return_finish")
             return []
         else:
             # db didn't have an entry with this email
-            dispatcher.utter_message(template="utter_no_order")
+            dispatcher.utter_message(response="utter_no_order")
             connection.close()
             return []
+
 
 class GiveName(Action):
     def name(self) -> Text:
         return "action_give_name"
 
     def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-
         evt = BotUttered(
-            text = "my name is bot? idk", 
-            metadata = {
+            text="my name is bot? idk",
+            metadata={
                 "nameGiven": "bot"
             }
         )
 
         return [evt]
+
+
+class SubmitReview(Action):
+    def name(self) -> Text:
+        return "action_submit_review"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        text = tracker.get_slot("review_text")
+
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO reviews (email, text) VALUES(?,?)", [email, text])
+        connection.commit()
+        connection.close()
+
+        dispatcher.utter_message(response="utter_review_submitted")
+        slots_to_reset = ["review_text"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class ReserveInventory(Action):
+    def name(self) -> Text:
+        return "action_reserve_inventory"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        color = tracker.get_slot("color")
+        size = tracker.get_slot("size")
+        email = tracker.get_slot("email")
+
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = cursor.fetchone()
+
+        if list(data_row)[5] == 'seller':
+            cursor.execute("INSERT INTO inventory (size, color) VALUES(?,?)", [size, color])
+            connection.commit()
+            connection.close()
+            dispatcher.utter_message(response="utter_item_reserved")
+        else:
+            dispatcher.utter_message(response="utter_forbidden")
+
+        slots_to_reset = ["size", "color"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class CreateSellerRequest(Action):
+    def name(self) -> Text:
+        return "action_create_seller_request"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+
+        if data_row[5] == 'seller':
+            dispatcher.utter_message(response="utter_already_seller")
+        elif data_row[5] == 'admin':
+            dispatcher.utter_message(response="utter_admins_not_allowed")
+        else:
+            cursor.execute("INSERT INTO seller_requests (user_id) VALUES(?)", [list(data_row)[0]])
+            connection.commit()
+            connection.close()
+            dispatcher.utter_message(response="utter_seller_request_submitted")
+
+
+class Logout(Action):
+    def name(self) -> Text:
+        return "action_logout"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(response="utter_logged_out")
+
+        slots_to_reset = ["email"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
+
+
+class ApplicationsList(Action):
+    def name(self) -> Text:
+        return "action_list_applications"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+        print(data_row)
+        print(data_row[5])
+        print(data_row[5] == 'admin')
+        if data_row[5] != 'admin':
+            dispatcher.utter_message(response="utter_only_admin")
+            return []
+
+        cursor.execute("SELECT * FROM seller_requests WHERE reviewed IS FALSE")
+        records = cursor.fetchall()
+        res = []
+        for row in records:
+            res.append(row[2])
+
+        dispatcher.utter_message(response="utter_users_to_review")
+        # print(" ".join(res))
+        dispatcher.utter_message(text=str(res))
+
+        return []
+
+
+class ApproveClient(Action):
+    def name(self) -> Text:
+        return "action_approve_client"
+
+    def run(
+            self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        email = tracker.get_slot("email")
+        connection = sqlite3.connect(path_to_db)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users INNER JOIN roles ON(users.role_id=roles.id) WHERE email=?", (email,))
+        data_row = list(cursor.fetchone())
+
+        if data_row[5] != 'admin':
+            dispatcher.utter_message(response="utter_only_admin")
+            return []
+
+        user_id = tracker.get_slot("user_id")
+        cursor.execute("UPDATE seller_requests SET reviewed=TRUE WHERE user_id=?", (user_id,))
+        connection.commit()
+        connection.close()
+        dispatcher.utter_message(response="utter_client_approved")
+
+        slots_to_reset = ["user_id"]
+        return [SlotSet(slot, None) for slot in slots_to_reset]
