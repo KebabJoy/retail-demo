@@ -277,7 +277,7 @@ class CreateSellerRequest(Action):
         elif data_row[5] == 'admin':
             dispatcher.utter_message(response="utter_admins_not_allowed")
         else:
-            cursor.execute("INSERT INTO seller_requests (user_id) VALUES(?)", [list(data_row)[0]])
+            cursor.execute("INSERT INTO seller_requests (user_id, reviewed) VALUES(?, FALSE)", [list(data_row)[0]])
             connection.commit()
             connection.close()
             dispatcher.utter_message(response="utter_seller_request_submitted")
